@@ -1,11 +1,13 @@
 package handlers
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/Mo3g4u/blog-myapi/models"
 	"github.com/gorilla/mux"
 )
 
@@ -14,7 +16,13 @@ func HelloHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Article...\n")
+	var reqArticle models.Article
+	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+	}
+
+	article := reqArticle
+	json.NewEncoder(w).Encode(article)
 }
 
 func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
@@ -30,8 +38,11 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 	} else {
 		page = 1
 	}
-	resString := fmt.Sprintf("Article List (page %d)\n", page)
-	io.WriteString(w, resString)
+
+	log.Println(page)
+
+	articles := []models.Article{models.Article1, models.Article2}
+	json.NewEncoder(w).Encode(articles)
 }
 
 func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
@@ -40,12 +51,28 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
-	resString := fmt.Sprintf("Article No.%d\n", articleID)
-	io.WriteString(w, resString)
+	log.Println(articleID)
+
+	article := models.Article1
+	json.NewEncoder(w).Encode(article)
 }
+
 func ArticleNiceHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Nice...\n")
+	var reqArticle models.Article
+	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+	}
+
+	article := reqArticle
+	json.NewEncoder(w).Encode(article)
 }
+
 func CommentHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Posting Comment...\n")
+	var reqComment models.Comment
+	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
+		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+	}
+
+	comment := reqComment
+	json.NewEncoder(w).Encode(comment)
 }
