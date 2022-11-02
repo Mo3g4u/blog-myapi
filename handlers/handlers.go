@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Mo3g4u/blog-myapi/models"
+	"github.com/Mo3g4u/blog-myapi/services"
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +22,12 @@ func PostArticleHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
-	article := reqArticle
+	article, err := services.PostArticleService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -39,9 +45,13 @@ func ArticleListHandler(w http.ResponseWriter, req *http.Request) {
 		page = 1
 	}
 
-	log.Println(page)
+	articles, err := services.GetArticleListService(page)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 
-	articles := []models.Article{models.Article1, models.Article2}
 	json.NewEncoder(w).Encode(articles)
 }
 
@@ -51,9 +61,13 @@ func ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
 		return
 	}
-	log.Println(articleID)
 
-	article := models.Article1
+	article, err := services.GetArticeService(articleID)
+	if err != nil {
+		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+		return
+	}
+
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -63,7 +77,11 @@ func ArticleNiceHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
-	article := reqArticle
+	article, err := services.PostNiceService(reqArticle)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(article)
 }
 
@@ -73,6 +91,10 @@ func CommentHandler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
 	}
 
-	comment := reqComment
+	comment, err := services.PostCommentService(reqComment)
+	if err != nil {
+		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		return
+	}
 	json.NewEncoder(w).Encode(comment)
 }
