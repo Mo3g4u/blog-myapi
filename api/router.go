@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/Mo3g4u/blog-myapi/api/middlewares"
 	"github.com/Mo3g4u/blog-myapi/controllers"
 	"github.com/Mo3g4u/blog-myapi/services"
 	"github.com/gorilla/mux"
@@ -21,6 +22,8 @@ func NewRouter(db *sql.DB) *mux.Router {
 	r.HandleFunc("/article/{id:[0-9]+}", aCon.ArticleDetailHandler).Methods(http.MethodGet)
 	r.HandleFunc("/article/nice", aCon.ArticleNiceHandler).Methods(http.MethodPost)
 	r.HandleFunc("/comment", cCon.CommentHandler).Methods(http.MethodPost)
+
+	r.Use(middlewares.LogginMiddleware)
 
 	return r
 }
