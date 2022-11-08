@@ -24,6 +24,7 @@ func NewRouter(db *sql.DB) *mux.Router {
 	r.HandleFunc("/comment", cCon.CommentHandler).Methods(http.MethodPost)
 
 	r.Use(middlewares.LogginMiddleware)
+	r.Use(middlewares.AuthMiddleware)
 
 	return r
 }

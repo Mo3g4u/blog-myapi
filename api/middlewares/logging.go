@@ -1,9 +1,10 @@
 package middlewares
 
 import (
-	"context"
 	"log"
 	"net/http"
+
+	"github.com/Mo3g4u/blog-myapi/common"
 )
 
 // 自作のResponseWriterを作る
@@ -27,8 +28,7 @@ func LogginMiddleware(next http.Handler) http.Handler {
 		traceID := newTraceID()
 		log.Printf("[%d]%s %s\n", traceID, req.RequestURI, req.Method)
 
-		ctx := req.Context()
-		ctx = context.WithValue(ctx, traceIDKey{}, traceID)
+		ctx := common.SetTraceID(req.Context(), traceID)
 		req = req.WithContext(ctx)
 		rlw := NewResLogginWriter(w)
 

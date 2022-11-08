@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Mo3g4u/blog-myapi/api/middlewares"
+	"github.com/Mo3g4u/blog-myapi/common"
 )
 
 func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
@@ -22,7 +22,7 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		}
 	}
 
-	traceID := middlewares.GetTraceID(req.Context())
+	traceID := common.GetTraceID(req.Context())
 	log.Printf("[%d]error: %s\n", traceID, appErr)
 
 	var statusCode int
@@ -31,6 +31,10 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		statusCode = http.StatusNotFound
 	case NoTargetData, ReqBodyDecodeFailed, BadParam:
 		statusCode = http.StatusBadRequest
+	case RequiredAuthorizationHeader, Unauthorizated:
+		statusCode = http.StatusUnauthorized
+	case NotMatchUser:
+		statusCode = http.StatusForbidden
 	default:
 		statusCode = http.StatusInternalServerError
 	}
